@@ -14,13 +14,18 @@ jobs:
       - run: docker build -t krumk/react-test -f ./client/Dockerfile.dev ./client
       - run: docker run -e CI=true krumk/react-test npm test
 
-  build:
+  dockerize:
     runs-on: ubuntu-latest
     needs: test
     steps:
       - uses: actions/checkout@v2
+
       - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
       - run: docker build -t krumk/mutli-client  ./client
       - run: docker build -t krumk/mutli-nginx  ./nginx
       - run: docker build -t krumk/mutli-server  ./server
       - run: docker build -t krumk/mutli-worker  ./worker
+      - run: docker push krumk/mutli-client
+      - run: docker push krumk/mutli-nginx
+      - run: docker push krumk/mutli-server
+      - run: docker push krumk/mutli-worker
