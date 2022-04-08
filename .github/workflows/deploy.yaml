@@ -5,30 +5,30 @@ on:
       - main
   
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker build -t krumk/react-test -f ./client/Dockerfile.dev ./client
-      - run: docker run -e CI=true krumk/react-test npm test
+  #     - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+  #     - run: docker build -t krumk/react-test -f ./client/Dockerfile.dev ./client
+  #     - run: docker run -e CI=true krumk/react-test npm test
 
-  dockerize:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v2
+  # dockerize:
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker build -t krumk/multi-client  ./client
-      - run: docker build -t krumk/multi-nginx  ./nginx
-      - run: docker build -t krumk/multi-server  ./server
-      - run: docker build -t krumk/multi-worker  ./worker
-      - run: docker push krumk/multi-client
-      - run: docker push krumk/multi-nginx
-      - run: docker push krumk/multi-server
-      - run: docker push krumk/multi-worker
+  #     - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+  #     - run: docker build -t krumk/multi-client  ./client
+  #     - run: docker build -t krumk/multi-nginx  ./nginx
+  #     - run: docker build -t krumk/multi-server  ./server
+  #     - run: docker build -t krumk/multi-worker  ./worker
+  #     - run: docker push krumk/multi-client
+  #     - run: docker push krumk/multi-nginx
+  #     - run: docker push krumk/multi-server
+  #     - run: docker push krumk/multi-worker
   
   deploy:
     runs-on: ubuntu-latest
