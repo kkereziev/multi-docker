@@ -32,10 +32,10 @@ jobs:
   
   deploy:
     runs-on: ubuntu-latest
-    needs: dockerize
+    # needs: dockerize
     steps:
         - name: Generate deployment package
-          run: zip -r deploy.zip . -x '*.git*'
+          run: zip -r deploy.zip ../../ -x '*.git*'
              
         - name: Deploy to EB
           uses: einaregilsson/beanstalk-deploy@v18
