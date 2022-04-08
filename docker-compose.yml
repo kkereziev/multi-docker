@@ -1,0 +1,78 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:latest
+    networks:
+      - my_network
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=root
+  redis:
+    image: redis:latest
+    networks:
+      - my_network
+
+  api:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server
+    depends_on:
+      - db
+      - redis
+      - worker
+    networks:
+      - my_network
+      - proxy_network
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    env_file:
+      - .env
+  
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      - /app/node_modules
+      - ./worker:/app
+    networks:
+      - my_network
+    env_file:
+      - .env
+
+  client:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    networks:
+      - proxy_network
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+    stdin_open: true
+    environment:
+      - WDS_SOCKET_PORT=0
+
+  proxy:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    restart: always # always keep alive
+    depends_on:
+      - client
+      - api
+    networks:
+      - proxy_network
+    ports:
+      - '3000:80'
+
+volumes:
+  db_volume:
+
+networks:
+  my_network:
+  proxy_network:
