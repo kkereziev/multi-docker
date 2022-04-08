@@ -5,18 +5,28 @@ services:
     image: "krumk/multi-client"
     mem_limit: 128m
     hostname: client
+
   server:
     image: "krumk/multi-server"
     mem_limit: 128m
     hostname: api
-    env_file:
-      - .env
+    environment:
+      - REDIS_HOST=$REDIS_HOST
+      - REDIS_PORT=$REDIS_PORT
+      - PGUSER=$PGUSER
+      - PGHOST=$PGHOST
+      - PGDATABASE=$PGDATABASE
+      - PGPASSWORD=$PGPASSWORD
+      - PGPORT=$PGPORT
+
   worker:
     image: "krumk/multi-worker"
     mem_limit: 128m
     hostname: worker
-    env_file:
-      - .env
+    environment:
+      - REDIS_HOST=$REDIS_HOST
+      - REDIS_PORT=$REDIS_PORT
+
   nginx:
     image: "krumk/multi-nginx"
     mem_limit: 128m
