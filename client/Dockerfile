@@ -8,7 +8,7 @@ RUN npm install && npm install react-scripts@3.4.1 -g --silent
 
 COPY . .
 
-RUN npm build
+RUN npm run build
 
 FROM nginx:latest
 
