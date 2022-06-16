@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  namespace: cicd
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: api
+  template:
+    metadata:
+      labels:
+        component: api
+    spec:
+      containers:
+      - name: api
+        image: krumk/multi-server
+        env:
+          - name: REDIS_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: REDIS_HOST
+          - name: REDIS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: REDIS_PORT
+          - name: PGHOST
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: PGHOST
+          - name: PGPORT
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: PGPORT
+          - name: PGDATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: PGDATABASE
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: PGPASSWORD
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5000

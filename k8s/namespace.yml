@@ -1,0 +1,8 @@
+## create ns with label name=test
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: cicd
+  labels:
+    name: cicd
+

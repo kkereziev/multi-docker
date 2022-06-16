@@ -29,23 +29,11 @@ jobs:
       - run: docker push krumk/multi-nginx
       - run: docker push krumk/multi-server
       - run: docker push krumk/multi-worker
-  
+
   deploy:
     runs-on: ubuntu-latest
     needs: dockerize
     steps:
-        - uses: actions/checkout@v2
-        - name: Generate deployment package
-          run: zip -r deploy.zip . -x '*.git*'
-             
-        - name: Deploy to EB
-          uses: einaregilsson/beanstalk-deploy@v18
-          with:
-            aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-            aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-            application_name: multi-docker
-            environment_name: Multidocker-env
-            existing_bucket_name: elasticbeanstalk-eu-central-1-192858519801
-            region: eu-central-1
-            version_label: ${{ github.sha }}
-            deployment_package: deploy.zip
+      - name: Set up gcloud Cloud SDK environment
+        uses: google-github-actions/setup-gcloud@v0.6.0
+        run: echo gcloud -v
