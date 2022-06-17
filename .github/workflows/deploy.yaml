@@ -44,7 +44,7 @@ jobs:
 
       - name: Dockerize
         run: |- 
-          echo ${{env.SHA}}
+          echo $SHA
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t krumk/multi-client-k8s:$SHA  ./client
           docker build -t krumk/multi-server-k8s:$SHA  ./server
