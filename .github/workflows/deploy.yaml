@@ -5,7 +5,7 @@ on:
       - main
   
 env:
-  SHA: $(git rev-parse HEAD)
+  SHA: $(git rev-parse --short "$GITHUB_SHA")
 
 jobs:
   test:
@@ -44,7 +44,7 @@ jobs:
 
       - name: Dockerize
         run: |- 
-          echo ${{ env.SHA }}
+          echo ${{env.SHA}}
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t krumk/multi-client-k8s:${{ env.SHA }}  ./client
           docker build -t krumk/multi-server-k8s:${{ env.SHA }}  ./server
