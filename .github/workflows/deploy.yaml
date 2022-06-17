@@ -8,19 +8,19 @@ env:
   SHA: $(git rev-parse HEAD)
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker build -t krumk/react-test -f ./client/Dockerfile.dev ./client
-      - run: docker run -e CI=true krumk/react-test npm test
+  #     - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+  #     - run: docker build -t krumk/react-test -f ./client/Dockerfile.dev ./client
+  #     - run: docker run -e CI=true krumk/react-test npm test
 
 
   apply:
     runs-on: ubuntu-latest
-    needs: test
+    # needs: test
     steps:
       - uses: actions/checkout@v2
 
@@ -48,12 +48,16 @@ jobs:
         run: |- 
           ${{ env.SHA }}
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t krumk/multi-client-k8s -f ./client/Dockerfile ./client
-          docker build -t krumk/multi-server-k8s -f ./server/Dockerfile ./server
-          docker build -t krumk/multi-worker-k8s -f ./worker/Dockerfile ./worker
+          docker build -t krumk/multi-client-k8s:${{ env.SHA }} -f ./client/Dockerfile ./client
+          docker build -t krumk/multi-server-k8s:${{ env.SHA }} -f ./server/Dockerfile ./server
+          docker build -t krumk/multi-worker-k8s:${{ env.SHA }} -f ./worker/Dockerfile ./worker
       
       - name: Push
         run: |- 
+          docker push krumk/multi-client-k8s:${{ env.SHA }}
+          docker push krumk/multi-server-k8s:${{ env.SHA }}
+          docker push krumk/multi-worker-k8s:${{ env.SHA }}
+
           docker push krumk/multi-client-k8s:latest
           docker push krumk/multi-server-k8s:latest
           docker push krumk/multi-worker-k8s:latest
