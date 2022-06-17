@@ -26,6 +26,11 @@ spec:
               configMapKeyRef:
                 name: config
                 key: REDIS_PORT
+          - name: PGUSER
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: PGUSER
           - name: PGHOST
             valueFrom:
               configMapKeyRef:
