@@ -41,10 +41,11 @@ jobs:
 
       - name: Dockerize
         run: |- 
+          pwd
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t krumk/multi-client-k8s  ../../client
-          docker build -t krumk/multi-server-k8s  ../../server
-          docker build -t krumk/multi-worker-k8s  ../../worker
+          docker build -t krumk/multi-client-k8s -f ./client/Dockerfile .
+          docker build -t krumk/multi-server-k8s -f ./server/Dockerfile .
+          docker build -t krumk/multi-worker-k8s -f ./worker/Dockerfile .
       
       - name: Push
         run: |- 
