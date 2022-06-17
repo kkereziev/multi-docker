@@ -47,10 +47,14 @@ jobs:
       - name: Dockerize
         run: |- 
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          
           docker build -t krumk/multi-client-k8s:${{ env.SHA }} -f ./client/Dockerfile ./client
           docker build -t krumk/multi-server-k8s:${{ env.SHA }} -f ./server/Dockerfile ./server
           docker build -t krumk/multi-worker-k8s:${{ env.SHA }} -f ./worker/Dockerfile ./worker
       
+          docker tag krumk/multi-client-k8s:latest krumk/multi-client-k8s:${{ env.SHA }}
+          docker tag krumk/multi-server-k8s:latest krumk/multi-server-k8s:${{ env.SHA }}
+          docker tag krumk/multi-worker-k8s:latest krumk/multi-worker-k8s:${{ env.SHA }}
       - name: Push
         run: |- 
           docker push krumk/multi-client-k8s:${{ env.SHA }}
@@ -64,6 +68,6 @@ jobs:
       - name: Apply
         run: |-
           kubectl apply -f k8s
-          kubectl set image deployments/api-deployment api=krumk/multi-server-k8s
-          kubectl set image deployments/client-deployment client=krumk/multi-client-k8s
-          kubectl set image deployments/worker-deployment worker=krumk/multi-worker-k8s
+          kubectl set image deployments/api-deployment api=krumk/multi-server-k8s:${{ env.SHA }}
+          kubectl set image deployments/client-deployment client=krumk/multi-client-k8s:${{ env.SHA }}
+          kubectl set image deployments/worker-deployment worker=krumk/multi-worker-k8s:${{ env.SHA }}
