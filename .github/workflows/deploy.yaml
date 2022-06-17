@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+      - uses: actions/checkout@v2
+
       - name: Set Service Key
         uses: 'google-github-actions/auth@v0'
         with:
@@ -40,8 +42,7 @@ jobs:
           location: europe-central2-a
 
       - name: Dockerize
-      - uses: actions/checkout@v2
-      - run: |- 
+        run: |- 
           pwd
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t krumk/multi-client-k8s -f ./client/Dockerfile ./client
