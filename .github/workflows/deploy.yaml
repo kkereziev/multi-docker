@@ -3,7 +3,10 @@ on:
   push:
     branches:
       - main
-  
+
+env:
+  SHA: $(git rev-parse HEAD)
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -43,7 +46,7 @@ jobs:
 
       - name: Dockerize
         run: |- 
-          pwd
+          ${{ env.SHA }}
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t krumk/multi-client-k8s -f ./client/Dockerfile ./client
           docker build -t krumk/multi-server-k8s -f ./server/Dockerfile ./server
