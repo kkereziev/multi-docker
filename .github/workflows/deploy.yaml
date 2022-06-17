@@ -58,6 +58,6 @@ jobs:
       - name: Apply
         run: |-
           kubectl apply -f k8s
-          kubectl set image deployments/server-deployment server=krumk/multi-server-k8s
+          kubectl set image deployments/api-deployment server=krumk/multi-server-k8s
           kubectl set image deployments/client-deployment client=krumk/multi-client-k8s
           kubectl set image deployments/worker-deployment worker=krumk/multi-worker-k8s
