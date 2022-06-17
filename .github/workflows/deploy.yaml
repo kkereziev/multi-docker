@@ -40,12 +40,13 @@ jobs:
           location: europe-central2-a
 
       - name: Dockerize
-        run: |- 
+      - uses: actions/checkout@v2
+      - run: |- 
           pwd
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t krumk/multi-client-k8s -f ./client/Dockerfile .
-          docker build -t krumk/multi-server-k8s -f ./server/Dockerfile .
-          docker build -t krumk/multi-worker-k8s -f ./worker/Dockerfile .
+          docker build -t krumk/multi-client-k8s -f ./client/Dockerfile ./client
+          docker build -t krumk/multi-server-k8s -f ./server/Dockerfile ./server
+          docker build -t krumk/multi-worker-k8s -f ./worker/Dockerfile ./worker
       
       - name: Push
         run: |- 
