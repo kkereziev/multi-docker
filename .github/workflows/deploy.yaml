@@ -33,7 +33,9 @@ jobs:
       - name: Set Project
         uses: google-github-actions/setup-gcloud@v0
         with:
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
           project_id: cicdudemy
+          export_default_credentials: true
  
       - name: Auth
         run: |-
