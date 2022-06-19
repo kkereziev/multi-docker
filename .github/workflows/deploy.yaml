@@ -20,6 +20,8 @@ jobs:
   apply:
     runs-on: ubuntu-latest
     needs: test
+    env: 
+      GCR_PATH: europe-central2-docker.pkg.dev/cicdudemy
     steps:
       - uses: actions/checkout@v2
 
@@ -36,6 +38,7 @@ jobs:
       - name: Auth
         run: |-
           gcloud --quiet auth configure-docker
+          gcloud auth configure-docker europe-central2-docker.pkg.dev
  
       - name: Get Credentials
         uses: google-github-actions/get-gke-credentials@v0
@@ -52,17 +55,26 @@ jobs:
           docker build -t krumk/multi-worker-k8s:latest -t krumk/multi-worker-k8s:${{ env.SHA }} -f ./worker/Dockerfile ./worker
       - name: Push
         run: |- 
-          docker push krumk/multi-client-k8s:${{ env.SHA }}
-          docker push krumk/multi-server-k8s:${{ env.SHA }}
-          docker push krumk/multi-worker-k8s:${{ env.SHA }}
+          docker tag krumk/multi-client-k8s:latest $GCR_PATH/multi-client-k8s:latest
+          docker tag krumk/multi-client-k8s:${{env.SHA}} $GCR_PATH/multi-client-k8s:${{env.SHA}}
+  
+          docker tag krumk/multi-server-k8s:latest $GCR_PATH/multi-server-k8s:latest
+          docker tag krumk/multi-server-k8s:${{ env.SHA }} $GCR_PATH/multi-server-k8s:${{ env.SHA }}
 
-          docker push krumk/multi-client-k8s:latest
-          docker push krumk/multi-server-k8s:latest
-          docker push krumk/multi-worker-k8s:latest
+          docker tag krumk/multi-worker-k8s:latest $GCR_PATH/multi-worker-k8s:latest
+          docker tag krumk/multi-worker-k8s:${{ env.SHA }} $GCR_PATH/multi-worker-k8s:${{ env.SHA }}
+
+          docker push $GCR_PATH/multi-client-k8s:${{ env.SHA }}
+          docker push $GCR_PATH/multi-server-k8s:${{ env.SHA }}
+          docker push $GCR_PATH/multi-worker-k8s:${{ env.SHA }}
+
+          docker push $GCR_PATH/multi-client-k8s:latest
+          docker push $GCR_PATH/multi-server-k8s:latest
+          docker push $GCR_PATH/multi-worker-k8s:latest
 
       - name: Apply
         run: |-
           kubectl apply -f k8s
-          kubectl set image deployments/api-deployment api=krumk/multi-server-k8s:${{ env.SHA }}
-          kubectl set image deployments/client-deployment client=krumk/multi-client-k8s:${{ env.SHA }}
-          kubectl set image deployments/worker-deployment worker=krumk/multi-worker-k8s:${{ env.SHA }}
+          kubectl set image deployments/api-deployment api=$GCR_PATH/multi-server-k8s:${{ env.SHA }}
+          kubectl set image deployments/client-deployment client=$GCR_PATH/multi-client-k8s:${{ env.SHA }}
+          kubectl set image deployments/worker-deployment worker=$GCR_PATH/multi-worker-k8s:${{ env.SHA }}
