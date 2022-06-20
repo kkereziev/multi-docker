@@ -20,8 +20,6 @@ jobs:
   apply:
     runs-on: ubuntu-latest
     needs: test
-    env: 
-      GCR_PATH: europe-central2-docker.pkg.dev/cicdudemy
     steps:
       - uses: actions/checkout@v2
 
@@ -33,7 +31,7 @@ jobs:
       - name: Set Project
         uses: google-github-actions/setup-gcloud@v0
         with:
-          project_id: cicdudemy
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
  
       - name: Auth
         run: |-
@@ -55,26 +53,26 @@ jobs:
           docker build -t krumk/multi-worker-k8s:latest -t krumk/multi-worker-k8s:${{ env.SHA }} -f ./worker/Dockerfile ./worker
       - name: Push
         run: |- 
-          docker tag krumk/multi-client-k8s:latest $GCR_PATH/images/multi-client-k8s:latest
-          docker tag krumk/multi-client-k8s:${{env.SHA}} $GCR_PATH/images/multi-client-k8s:${{env.SHA}}
+          docker tag krumk/multi-client-k8s:latest ${{ secrets.GCR_PATH }}/multi-client-k8s:latest
+          docker tag krumk/multi-client-k8s:${{env.SHA}} ${{ secrets.GCR_PATH }}/multi-client-k8s:${{env.SHA}}
   
-          docker tag krumk/multi-server-k8s:latest $GCR_PATH/images/multi-server-k8s:latest
-          docker tag krumk/multi-server-k8s:${{ env.SHA }} $GCR_PATH/images/multi-server-k8s:${{ env.SHA }}
+          docker tag krumk/multi-server-k8s:latest ${{ secrets.GCR_PATH }}/multi-server-k8s:latest
+          docker tag krumk/multi-server-k8s:${{ env.SHA }} ${{ secrets.GCR_PATH }}/multi-server-k8s:${{ env.SHA }}
 
-          docker tag krumk/multi-worker-k8s:latest $GCR_PATH/images/multi-worker-k8s:latest
-          docker tag krumk/multi-worker-k8s:${{ env.SHA }} $GCR_PATH/images/multi-worker-k8s:${{ env.SHA }}
+          docker tag krumk/multi-worker-k8s:latest ${{ secrets.GCR_PATH }}/multi-worker-k8s:latest
+          docker tag krumk/multi-worker-k8s:${{ env.SHA }} ${{ secrets.GCR_PATH }}/multi-worker-k8s:${{ env.SHA }}
 
-          docker push $GCR_PATH/images/multi-client-k8s:${{ env.SHA }}
-          docker push $GCR_PATH/images/multi-server-k8s:${{ env.SHA }}
-          docker push $GCR_PATH/images/multi-worker-k8s:${{ env.SHA }}
+          docker push ${{ secrets.GCR_PATH }}/multi-client-k8s:${{ env.SHA }}
+          docker push ${{ secrets.GCR_PATH }}/multi-server-k8s:${{ env.SHA }}
+          docker push ${{ secrets.GCR_PATH }}/multi-worker-k8s:${{ env.SHA }}
 
-          docker push $GCR_PATH/images/multi-client-k8s:latest
-          docker push $GCR_PATH/images/multi-server-k8s:latest
-          docker push $GCR_PATH/images/multi-worker-k8s:latest
+          docker push ${{ secrets.GCR_PATH }}/multi-client-k8s:latest
+          docker push ${{ secrets.GCR_PATH }}/multi-server-k8s:latest
+          docker push ${{ secrets.GCR_PATH }}/multi-worker-k8s:latest
 
       - name: Apply
         run: |-
           kubectl apply -f k8s
-          kubectl set image deployments/api-deployment api=$GCR_PATH/images/multi-server-k8s:${{ env.SHA }}
-          kubectl set image deployments/client-deployment client=$GCR_PATH/images/multi-client-k8s:${{ env.SHA }}
-          kubectl set image deployments/worker-deployment worker=$GCR_PATH/images/multi-worker-k8s:${{ env.SHA }}
+          kubectl set image deployments/api-deployment api=${{ secrets.GCR_PATH }}/multi-server-k8s:${{ env.SHA }}
+          kubectl set image deployments/client-deployment client=${{ secrets.GCR_PATH }}/multi-client-k8s:${{ env.SHA }}
+          kubectl set image deployments/worker-deployment worker=${{ secrets.GCR_PATH }}/multi-worker-k8s:${{ env.SHA }}
