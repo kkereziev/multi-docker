@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: config
+  namespace: cicd
 data:
   REDIS_HOST: redis-cluster-ip-svc
   REDIS_PORT: "6379"
